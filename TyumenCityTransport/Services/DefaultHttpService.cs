@@ -17,7 +17,9 @@
         {
             var requestUrl = BuildGetRequestUrl(url.AbsoluteUri, parameters);
             _logger?.Log($"GET-запрос: {requestUrl.AbsoluteUri}");
-            return await _httpClient.GetStreamAsync(requestUrl).ConfigureAwait(false);
+            var response = await _httpClient.GetAsync(requestUrl).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
         }
 
         /// <summary>

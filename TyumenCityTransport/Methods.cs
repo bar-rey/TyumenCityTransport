@@ -188,7 +188,7 @@ namespace TyumenCityTransport
         /// Баланс транспортной карты
         /// </summary>
         /// <returns>Автомобили общественного транспорта</returns>
-        public async Task<ApiResponse<Response<CardBalance>>> Balance(string? card = null)
+        public async Task<ApiResponse<CardBalance>> Balance(string? card = null)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             if (card != null)
@@ -196,7 +196,7 @@ namespace TyumenCityTransport
                 parameters.Add("card", card.ToApiString());
                 parameters.Add("hash", _transportApi.Cryptography.MD5FromInput($"{DateTime.Today.ToString("dd.MM.yyyy")}.{card}").ToLower());
             }
-            return await _transportApi.RequestAsync<Response<CardBalance>>("balance", parameters).ConfigureAwait(false);
+            return await _transportApi.RequestAsync<CardBalance>("balance", parameters).ConfigureAwait(false);
         }
     }
 }

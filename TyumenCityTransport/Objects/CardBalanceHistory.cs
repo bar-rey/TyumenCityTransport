@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TyumenCityTransport.Converters;
 
 namespace TyumenCityTransport.Objects
 {
@@ -36,6 +37,7 @@ namespace TyumenCityTransport.Objects
         /// 
         /// </summary>
         [JsonPropertyName("date")]
+        [JsonConverter(typeof(BadDateTimeConverter))]
         public DateTime date { get; set; }
         /// <summary>
         /// 
