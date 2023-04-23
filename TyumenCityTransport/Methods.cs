@@ -194,7 +194,7 @@ namespace TyumenCityTransport
             if (card != null)
             {
                 parameters.Add("card", card.ToApiString());
-                parameters.Add("hash", _transportApi.Cryptography.MD5FromInput($"{DateTime.Today.ToString("dd.MM.yyyy")}.{card}"));
+                parameters.Add("hash", _transportApi.Cryptography.MD5FromInput($"{DateTime.Today.ToString("dd.MM.yyyy")}.{card}").ToLower());
             }
             return await _transportApi.RequestAsync<Response<CardBalance>>("balance", parameters).ConfigureAwait(false);
         }
