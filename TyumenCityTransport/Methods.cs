@@ -1,4 +1,5 @@
-﻿using TyumenCityTransport.Objects;
+﻿using System.Collections.Generic;
+using TyumenCityTransport.Objects;
 
 namespace TyumenCityTransport
 {
@@ -181,6 +182,21 @@ namespace TyumenCityTransport
         public async Task<ApiResponse<Response<Car>>> Car()
         {
             return await _transportApi.RequestAsync<Response<Car>>("car").ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Баланс транспортной карты
+        /// </summary>
+        /// <returns>Автомобили общественного транспорта</returns>
+        public async Task<ApiResponse<Response<CardBalance>>> Balance(string? card = null)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            if (card != null)
+            {
+                parameters.Add("card", card.ToApiString());
+                parameters.Add("hash", _transportApi.Cryptography.MD5FromInput($"{DateTime.Today.ToString("dd.MM.yyyy")}.{card}"));
+            }
+            return await _transportApi.RequestAsync<Response<CardBalance>>("balance", parameters).ConfigureAwait(false);
         }
     }
 }

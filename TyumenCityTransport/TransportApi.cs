@@ -16,7 +16,7 @@ namespace TyumenCityTransport
         /// <summary>
         /// Базовый URL
         /// </summary>
-        private readonly string _methodBase;
+        private readonly string _methodBase = $"https://api.tgt72.ru/api/v{CurrentSupportedApiVersion}/";
 
         /// <summary>
         /// Сервис для отправки HTTP-запросов библиотекой
@@ -27,6 +27,11 @@ namespace TyumenCityTransport
         /// Логгер библиотеки
         /// </summary>
         internal ILogger? Logger { get; } = null;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        internal readonly ICryptography Cryptography;
 
         /// <summary>
         /// Используемая экземпляром класса версия API
@@ -40,39 +45,57 @@ namespace TyumenCityTransport
 
         #region Constructors
 
-        public TransportApi(int apiVersion = CurrentSupportedApiVersion)
+        public TransportApi()
         {
-            _httpService = new DefaultHttpService();
-            _methodBase = $"https://api.tgt72.ru/api/v{apiVersion}/";
-            ApiVersion = apiVersion;
+            Logger = new DefaultLogger();
+            _httpService = new DefaultHttpService(Logger);
+            Cryptography = new DefaultCryptography();
         }
 
-        public TransportApi(IHttpService httpService, int apiVersion = CurrentSupportedApiVersion)
+        public TransportApi(IHttpService httpService)
         {
             _httpService = httpService;
-            _methodBase = $"https://api.tgt72.ru/api/v{apiVersion}/";
-            ApiVersion = apiVersion;
+            Logger = new DefaultLogger();
+            Cryptography = new DefaultCryptography();
         }
 
-        public TransportApi(ILogger logger, int apiVersion = CurrentSupportedApiVersion)
+        public TransportApi(IHttpService httpService, ICryptography cryptography)
+        {
+            _httpService = httpService;
+            Logger = new DefaultLogger();
+            Cryptography = cryptography;
+        }
+
+        public TransportApi(ILogger logger)
         {
             Logger = logger;
             _httpService = new DefaultHttpService(logger);
-            _methodBase = $"https://api.tgt72.ru/api/v{apiVersion}/";
-            ApiVersion = apiVersion;
+            Cryptography = new DefaultCryptography();
         }
 
-        public TransportApi(IHttpService httpService, ILogger logger,
-            int apiVersion = CurrentSupportedApiVersion) 
+        public TransportApi(ILogger logger, ICryptography cryptography)
+        {
+            Logger = logger;
+            _httpService = new DefaultHttpService(logger);
+            Cryptography = cryptography;
+        }
+
+        public TransportApi(IHttpService httpService, ILogger logger, ICryptography cryptography) 
         {
             Logger = logger;
             _httpService = httpService;
-            _methodBase = $"https://api.tgt72.ru/api/v{apiVersion}/";
-            ApiVersion = apiVersion;
+            Cryptography = cryptography;
         }
 
         #endregion Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="method"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public async Task<ApiResponse<TResult>> RequestAsync<TResult>(string method, Dictionary<string, string>? parameters = null)
         {
             var url = new Uri(string.Concat(_methodBase, method));
